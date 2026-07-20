@@ -3,13 +3,21 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Computer Department Attendance Management System API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: members
+    description: Department members (students/staff)
+  - name: attendance
+    description: Attendance records
+  - name: excel
+    description: Excel import/export
+  - name: dashboard
+    description: Dashboard summaries and stats
 paths:
   /healthz:
     get:
@@ -24,6 +32,363 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /members:
+    get:
+      operationId: listMembers
+      tags: [members]
+      summary: List all members
+      parameters:
+        - in: query
+          name: role
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: search
+          schema:
+            type: string
+          required: false
+      responses:
+        "200":
+          description: List of members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Member"
+    post:
+      operationId: createMember
+      tags: [members]
+      summary: Create a new member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MemberInput"
+      responses:
+        "201":
+          description: Created member
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+
+  /members/{id}:
+    get:
+      operationId: getMember
+      tags: [members]
+      summary: Get a member by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Member details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+        "404":
+          description: Member not found
+    patch:
+      operationId: updateMember
+      tags: [members]
+      summary: Update a member
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MemberUpdate"
+      responses:
+        "200":
+          description: Updated member
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+        "404":
+          description: Member not found
+    delete:
+      operationId: deleteMember
+      tags: [members]
+      summary: Delete a member
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Member not found
+
+  /members/{id}/photo:
+    post:
+      operationId: uploadMemberPhoto
+      tags: [members]
+      summary: Upload or replace member photo (base64)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PhotoUpload"
+      responses:
+        "200":
+          description: Photo uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+        "404":
+          description: Member not found
+
+  /attendance:
+    get:
+      operationId: listAttendance
+      tags: [attendance]
+      summary: List attendance records
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: memberId
+          schema:
+            type: integer
+          required: false
+        - in: query
+          name: startDate
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: endDate
+          schema:
+            type: string
+          required: false
+      responses:
+        "200":
+          description: List of attendance records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AttendanceRecord"
+    post:
+      operationId: markAttendance
+      tags: [attendance]
+      summary: Mark attendance for a member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AttendanceInput"
+      responses:
+        "201":
+          description: Attendance marked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttendanceRecord"
+
+  /attendance/bulk:
+    post:
+      operationId: bulkMarkAttendance
+      tags: [attendance]
+      summary: Mark attendance for multiple members at once
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkAttendanceInput"
+      responses:
+        "201":
+          description: Bulk attendance marked
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AttendanceRecord"
+
+  /attendance/{id}:
+    patch:
+      operationId: updateAttendance
+      tags: [attendance]
+      summary: Update an attendance record
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AttendanceUpdate"
+      responses:
+        "200":
+          description: Updated attendance record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttendanceRecord"
+        "404":
+          description: Record not found
+    delete:
+      operationId: deleteAttendance
+      tags: [attendance]
+      summary: Delete an attendance record
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Record not found
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get overall attendance summary stats
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+          required: false
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/member-stats:
+    get:
+      operationId: getMemberStats
+      tags: [dashboard]
+      summary: Per-member attendance statistics for a date range
+      parameters:
+        - in: query
+          name: startDate
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: endDate
+          schema:
+            type: string
+          required: false
+      responses:
+        "200":
+          description: Member attendance statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MemberStat"
+
+  /dashboard/daily-trend:
+    get:
+      operationId: getDailyTrend
+      tags: [dashboard]
+      summary: Daily attendance counts for the last N days
+      parameters:
+        - in: query
+          name: days
+          schema:
+            type: integer
+          required: false
+      responses:
+        "200":
+          description: Daily attendance trend
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DailyTrendPoint"
+
+  /excel/export:
+    get:
+      operationId: exportAttendanceExcel
+      tags: [excel]
+      summary: Export attendance data as Excel (returns base64 encoded xlsx)
+      parameters:
+        - in: query
+          name: startDate
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: endDate
+          schema:
+            type: string
+          required: false
+      responses:
+        "200":
+          description: Excel file as base64 string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExcelExportResult"
+
+  /excel/import:
+    post:
+      operationId: importMembersExcel
+      tags: [excel]
+      summary: Import members from Excel (base64 encoded xlsx)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExcelImportInput"
+      responses:
+        "200":
+          description: Import results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExcelImportResult"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +399,241 @@ components:
       required:
         - status
 
+    Member:
+      type: object
+      required: [id, name, memberId, role, department, createdAt]
+      properties:
+        id:
+          type: integer
+        memberId:
+          type: string
+        name:
+          type: string
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        role:
+          type: string
+          enum: [student, staff, faculty]
+        department:
+          type: string
+        photoUrl:
+          type: ["string", "null"]
+        year:
+          type: ["string", "null"]
+        section:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    MemberInput:
+      type: object
+      required: [name, memberId, role, department]
+      properties:
+        memberId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [student, staff, faculty]
+        department:
+          type: string
+        year:
+          type: string
+        section:
+          type: string
+
+    MemberUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+          enum: [student, staff, faculty]
+        department:
+          type: string
+        year:
+          type: string
+        section:
+          type: string
+
+    PhotoUpload:
+      type: object
+      required: [photoBase64]
+      properties:
+        photoBase64:
+          type: string
+        mimeType:
+          type: string
+
+    AttendanceRecord:
+      type: object
+      required: [id, memberId, memberName, date, status, createdAt]
+      properties:
+        id:
+          type: integer
+        memberId:
+          type: integer
+        memberName:
+          type: string
+        memberMemberId:
+          type: string
+        date:
+          type: string
+        status:
+          type: string
+          enum: [present, absent, late, excused]
+        note:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    AttendanceInput:
+      type: object
+      required: [memberId, date, status]
+      properties:
+        memberId:
+          type: integer
+        date:
+          type: string
+        status:
+          type: string
+          enum: [present, absent, late, excused]
+        note:
+          type: string
+
+    AttendanceUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [present, absent, late, excused]
+        note:
+          type: string
+
+    BulkAttendanceInput:
+      type: object
+      required: [date, records]
+      properties:
+        date:
+          type: string
+        records:
+          type: array
+          items:
+            type: object
+            required: [memberId, status]
+            properties:
+              memberId:
+                type: integer
+              status:
+                type: string
+                enum: [present, absent, late, excused]
+              note:
+                type: string
+
+    DashboardSummary:
+      type: object
+      required: [totalMembers, presentToday, absentToday, lateToday, excusedToday, attendanceRateToday, date]
+      properties:
+        totalMembers:
+          type: integer
+        presentToday:
+          type: integer
+        absentToday:
+          type: integer
+        lateToday:
+          type: integer
+        excusedToday:
+          type: integer
+        attendanceRateToday:
+          type: number
+        date:
+          type: string
+
+    MemberStat:
+      type: object
+      required: [memberId, memberName, memberMemberId, role, totalDays, presentDays, absentDays, lateDays, excusedDays, attendanceRate]
+      properties:
+        memberId:
+          type: integer
+        memberName:
+          type: string
+        memberMemberId:
+          type: string
+        role:
+          type: string
+        totalDays:
+          type: integer
+        presentDays:
+          type: integer
+        absentDays:
+          type: integer
+        lateDays:
+          type: integer
+        excusedDays:
+          type: integer
+        attendanceRate:
+          type: number
+        photoUrl:
+          type: ["string", "null"]
+
+    DailyTrendPoint:
+      type: object
+      required: [date, present, absent, late, excused, total]
+      properties:
+        date:
+          type: string
+        present:
+          type: integer
+        absent:
+          type: integer
+        late:
+          type: integer
+        excused:
+          type: integer
+        total:
+          type: integer
+
+    ExcelExportResult:
+      type: object
+      required: [fileBase64, filename]
+      properties:
+        fileBase64:
+          type: string
+        filename:
+          type: string
+
+    ExcelImportInput:
+      type: object
+      required: [fileBase64]
+      properties:
+        fileBase64:
+          type: string
+
+    ExcelImportResult:
+      type: object
+      required: [imported, skipped, errors]
+      properties:
+        imported:
+          type: integer
+        skipped:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: string
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/Member"

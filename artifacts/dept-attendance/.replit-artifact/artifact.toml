@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "CS Department Attendance"
+version = "1.0.0"
+id = "artifacts/dept-attendance"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19100
+
+[services.development]
+run = "pnpm --filter @workspace/dept-attendance run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/dept-attendance", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/dept-attendance/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19100"
+BASE_PATH = "/"
