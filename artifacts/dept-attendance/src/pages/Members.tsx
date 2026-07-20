@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, ChangeEvent, FormEvent } from "react";
 import { useListMembers, useCreateMember, useUpdateMember, useDeleteMember, useUploadMemberPhoto, Member } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -147,7 +147,7 @@ function MemberCard({ member, onEdit }: { member: Member; onEdit: () => void }) 
     }
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -285,7 +285,7 @@ function MemberFormDialog({
   });
 
   // Reset form when opened with new member data
-  React.useEffect(() => {
+  useEffect(() => {
     if (open) {
       if (member) {
         setFormData({
@@ -317,7 +317,7 @@ function MemberFormDialog({
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     
     if (isEditing) {
