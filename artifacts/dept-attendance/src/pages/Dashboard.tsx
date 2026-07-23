@@ -1,4 +1,5 @@
 import { useGetDashboardSummary, useGetDailyTrend, useGetMemberStats } from "@workspace/api-client-react";
+import { getRoleLabel } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, UserCheck, UserMinus, Clock, CalendarDays } from "lucide-react";
 import {
@@ -178,7 +179,7 @@ export default function Dashboard() {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium leading-none text-foreground truncate">{stat.memberName}</p>
-                      <p className="text-xs text-muted-foreground mt-1 truncate">{stat.memberMemberId} • {stat.role}</p>
+                      <p className="text-xs text-muted-foreground mt-1 truncate">{stat.memberMemberId} • {getRoleLabel(stat.role)}</p>
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-bold text-accent">{Math.round(stat.attendanceRate)}%</div>

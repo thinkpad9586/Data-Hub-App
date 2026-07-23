@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getListAttendanceQueryKey } from "@workspace/api-client-react";
-import { cn } from "@/lib/utils";
+import { cn, getRoleLabel } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -249,9 +249,10 @@ export default function Attendance() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="student">Students</SelectItem>
-                <SelectItem value="faculty">Faculty</SelectItem>
-                <SelectItem value="staff">Staff</SelectItem>
+                <SelectItem value="hod">HOD</SelectItem>
+                <SelectItem value="cc_faculty">Computer Center Faculty</SelectItem>
+                <SelectItem value="school_faculty">School Computer Faculty</SelectItem>
+                <SelectItem value="lab_instructor">Mobile Lab Instructor</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -315,7 +316,7 @@ export default function Attendance() {
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col gap-1">
-                      <Badge variant="outline" className="w-fit text-[10px] py-0 px-1.5 capitalize">{member.role}</Badge>
+                      <Badge variant="outline" className="w-fit text-[10px] py-0 px-1.5">{getRoleLabel(member.role)}</Badge>
                       {member.year && <span className="text-xs text-muted-foreground">{member.year} {member.section ? `- ${member.section}` : ''}</span>}
                     </div>
                   </TableCell>

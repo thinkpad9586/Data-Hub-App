@@ -12,8 +12,9 @@ import { Search, Plus, MoreVertical, Edit2, Trash2, Camera, User } from "lucide-
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useQueryClient } from "@tanstack/react-query";
 import { getListMembersQueryKey } from "@workspace/api-client-react";
+import { getRoleLabel } from "@/lib/utils";
 
-type MemberRole = "student" | "staff" | "faculty";
+type MemberRole = "hod" | "cc_faculty" | "school_faculty" | "lab_instructor";
 
 export default function Members() {
   const [search, setSearch] = useState("");
@@ -41,7 +42,7 @@ export default function Members() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Members</h1>
-          <p className="text-muted-foreground mt-1">Manage department students, faculty, and staff.</p>
+          <p className="text-muted-foreground mt-1">Manage department faculty and instructors.</p>
         </div>
         <Button onClick={handleOpenNew} className="shrink-0 gap-2">
           <Plus className="h-4 w-4" /> Add Member
@@ -64,9 +65,10 @@ export default function Members() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Roles</SelectItem>
-            <SelectItem value="student">Students</SelectItem>
-            <SelectItem value="faculty">Faculty</SelectItem>
-            <SelectItem value="staff">Staff</SelectItem>
+            <SelectItem value="hod">Head of Computer Department (HOD)</SelectItem>
+            <SelectItem value="cc_faculty">Computer Center Faculty</SelectItem>
+            <SelectItem value="school_faculty">School Computer Faculty</SelectItem>
+            <SelectItem value="lab_instructor">Mobile Computer Lab Instructor</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -126,9 +128,10 @@ function MemberCard({ member, onEdit }: { member: Member; onEdit: () => void }) 
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case 'student': return 'info';
-      case 'faculty': return 'default';
-      case 'staff': return 'secondary';
+      case 'hod': return 'default';
+      case 'cc_faculty': return 'info';
+      case 'school_faculty': return 'secondary';
+      case 'lab_instructor': return 'warning';
       default: return 'outline';
     }
   };
@@ -230,8 +233,8 @@ function MemberCard({ member, onEdit }: { member: Member; onEdit: () => void }) 
               </DropdownMenu>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
-              <Badge variant={getRoleBadgeColor(member.role) as any} className="capitalize text-[10px] px-1.5 py-0">
-                {member.role}
+              <Badge variant={getRoleBadgeColor(member.role) as any} className="text-[10px] px-1.5 py-0">
+                {getRoleLabel(member.role)}
               </Badge>
               {member.year && (
                 <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-muted-foreground bg-muted/50 border-transparent">
@@ -278,7 +281,7 @@ function MemberFormDialog({
     name: "",
     email: "",
     phone: "",
-    role: "student" as MemberRole,
+    role: "hod" as MemberRole,
     department: "Computer Science",
     year: "",
     section: ""
@@ -304,7 +307,7 @@ function MemberFormDialog({
           name: "",
           email: "",
           phone: "",
-          role: "student",
+          role: "hod",
           department: "Computer Science",
           year: "",
           section: ""
@@ -355,7 +358,7 @@ function MemberFormDialog({
           <DialogHeader>
             <DialogTitle>{isEditing ? "Edit Member" : "Add New Member"}</DialogTitle>
             <DialogDescription>
-              {isEditing ? "Update member details in the department directory." : "Add a new student, faculty, or staff member to the department."}
+              {isEditing ? "Update member details in the department directory." : "Add a new faculty or instructor to the department."}
             </DialogDescription>
           </DialogHeader>
           
@@ -387,9 +390,10 @@ function MemberFormDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="student">Student</SelectItem>
-                  <SelectItem value="faculty">Faculty</SelectItem>
-                  <SelectItem value="staff">Staff</SelectItem>
+                  <SelectItem value="hod">Head of Computer Department (HOD)</SelectItem>
+                  <SelectItem value="cc_faculty">Computer Center Faculty</SelectItem>
+                  <SelectItem value="school_faculty">School Computer Faculty</SelectItem>
+                  <SelectItem value="lab_instructor">Mobile Computer Lab Instructor</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -404,34 +408,6 @@ function MemberFormDialog({
               />
             </div>
             
-            {formData.role === 'student' && (
-              <>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Year Level</label>
-                  <Select value={formData.year} onValueChange={(val) => handleChange("year", val)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Year" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1st Year">1st Year</SelectItem>
-                      <SelectItem value="2nd Year">2nd Year</SelectItem>
-                      <SelectItem value="3rd Year">3rd Year</SelectItem>
-                      <SelectItem value="4th Year">4th Year</SelectItem>
-                      <SelectItem value="5th Year">5th Year</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Section</label>
-                  <Input 
-                    value={formData.section} 
-                    onChange={(e) => handleChange("section", e.target.value)} 
-                    placeholder="e.g. A, B, CS-101"
-                  />
-                </div>
-              </>
-            )}
           </div>
           
           <DialogFooter>

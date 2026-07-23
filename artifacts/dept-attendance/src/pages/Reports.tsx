@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { Download, Calendar as CalendarIcon, FileSpreadsheet } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, getRoleLabel } from "@/lib/utils";
 
 export default function Reports() {
   const [dateRange, setDateRange] = useState<{from: Date, to: Date}>({
@@ -155,7 +155,7 @@ export default function Reports() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className="text-xs font-medium text-muted-foreground capitalize">{stat.role}</span>
+                    <span className="text-xs font-medium text-muted-foreground">{getRoleLabel(stat.role)}</span>
                   </TableCell>
                   <TableCell className="text-right font-medium">{stat.totalDays}</TableCell>
                   <TableCell className="text-right text-accent font-medium">{stat.presentDays}</TableCell>

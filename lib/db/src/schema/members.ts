@@ -8,7 +8,7 @@ export const membersTable = pgTable("members", {
   name: text("name").notNull(),
   email: text("email"),
   phone: text("phone"),
-  role: text("role").notNull().default("student"), // student | staff | faculty
+  role: text("role").notNull().default("hod"), // hod | cc_faculty | school_faculty | lab_instructor
   department: text("department").notNull().default("Computer Science"),
   year: text("year"),
   section: text("section"),
