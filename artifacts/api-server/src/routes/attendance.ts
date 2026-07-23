@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, and, gte, lte, sql } from "drizzle-orm";
+import { eq, and, gte, lte, inArray } from "drizzle-orm";
 import { db, attendanceTable, membersTable } from "@workspace/db";
 import {
   ListAttendanceQueryParams,
@@ -147,7 +147,7 @@ router.post("/attendance/bulk", async (req, res): Promise<void> => {
     })
     .from(attendanceTable)
     .innerJoin(membersTable, eq(attendanceTable.memberId, membersTable.id))
-    .where(sql`${attendanceTable.id} = ANY(${ids})`);
+    .where(inArray(attendanceTable.id, ids));
 
   res.status(201).json(result);
 });

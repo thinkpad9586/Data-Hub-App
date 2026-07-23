@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { format, subDays } from "date-fns";
-import { useGetMemberStats, useExportAttendanceExcel } from "@workspace/api-client-react";
+import { useGetMemberStats, exportAttendanceExcel } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,23 +25,21 @@ export default function Reports() {
     endDate: endDateStr
   });
 
-  const exportMutation = useExportAttendanceExcel();
+  const [isExporting, setIsExporting] = useState(false);
 
-  const handleExport = () => {
-    exportMutation.mutate(
-      { params: { startDate: startDateStr, endDate: endDateStr } },
-      {
-        onSuccess: (result) => {
-          // Trigger browser download from base64
-          const link = document.createElement('a');
-          link.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${result.fileBase64}`;
-          link.download = result.filename;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
-      }
-    );
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const result = await exportAttendanceExcel({ startDate: startDateStr, endDate: endDateStr });
+      const link = document.createElement('a');
+      link.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${result.fileBase64}`;
+      link.download = result.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const getAttendanceBadgeVariant = (rate: number) => {
@@ -87,11 +85,11 @@ export default function Reports() {
 
           <Button 
             onClick={handleExport} 
-            disabled={exportMutation.isPending || isLoading || !stats || stats.length === 0}
+            disabled={isExporting || isLoading || !stats || stats.length === 0}
             className="gap-2 shrink-0 bg-[#1D6F42] hover:bg-[#155A34] text-white" // Excel green
           >
             <FileSpreadsheet className="h-4 w-4" />
-            {exportMutation.isPending ? "Generating..." : "Export to Excel"}
+            {isExporting ? "Generating..." : "Export to Excel"}
           </Button>
         </div>
       </div>
