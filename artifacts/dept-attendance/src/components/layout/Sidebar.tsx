@@ -32,9 +32,7 @@ export function Sidebar() {
     <aside className="w-64 border-r bg-card min-h-screen flex flex-col h-full flex-shrink-0 relative sticky top-0">
       <div className="p-6">
         <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-          <span className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-sm">
-            CS
-          </span>
+          <span className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-sm">CD</span>
           Attendance
         </h1>
         <p className="text-xs text-muted-foreground mt-1 tracking-wide">Digital Literacy & Computer Education Department</p>
