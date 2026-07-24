@@ -37,9 +37,8 @@ export function Sidebar() {
           </span>
           Attendance
         </h1>
-        <p className="text-xs text-muted-foreground mt-1 tracking-wide">DEPARTMENT OF COMPUTER SCIENCE</p>
+        <p className="text-xs text-muted-foreground mt-1 tracking-wide">Digital Literacy & Computer Education Department</p>
       </div>
-
       <nav className="flex-1 px-4 space-y-1.5 mt-2">
         {navItems.map((item) => {
           const isActive = location === item.path;
@@ -65,7 +64,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-
       <div className="p-4 border-t mt-auto">
         <div className="flex items-center gap-3 px-3 py-2">
           <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center border text-xs font-semibold text-muted-foreground">
